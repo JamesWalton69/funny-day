@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Host & Referee Monitoring Dashboard | 6-Player Reaction Challenge</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="top-nav">
+    <div class="brand">
+      <h1 class="brand-title">🎯 6-PLAYER REACTION CHALLENGE</h1>
+      <span id="matchStateBadge" class="match-status-badge status-lobby">LOBBY</span>
+      <span id="roundCounter" style="font-weight:700; color:var(--text-muted); font-size:0.9rem;">ROUND: 0 / 40</span>
+      <span id="timerDisplay" style="font-family:monospace; font-weight:700; color:#38bdf8; font-size:1.0rem;">00:00</span>
+    </div>
+
+    <!-- Match Control Buttons -->
+    <div class="controls-group">
+      <button id="btnStart" class="btn btn-primary" onclick="triggerStart()">▶ Start Match</button>
+      <button id="btnStop" class="btn btn-danger" style="background:#dc2626; border-color:#b91c1c; font-weight:700;" onclick="triggerStop()">⏹ Stop All</button>
+      <button id="btnCalibrate" class="btn btn-calibrate" onclick="triggerCalibrate()">🎯 Calibrate Neutral Gaze (3s)</button>
+      <button id="btnSkip" class="btn btn-secondary" onclick="triggerSkip()">⏭ Skip Video</button>
+      <button id="btnReset" class="btn btn-danger" onclick="triggerReset()">↺ Reset</button>
+      <button class="btn btn-secondary" onclick="loadAvailableCameras()">🔄 Rescan Cameras</button>
+      <a href="/tv" target="_blank" class="btn btn-secondary" style="text-decoration:none;">📺 Open TV Window</a>
+      <button class="btn btn-secondary" onclick="openAdbModal()">📱 ADB / Phones</button>
+    </div>
+  </header>
+
+  <!-- ADB Phones Notice Bar -->
+  <div style="background:#0f172a; padding:6px 24px; border-bottom:1px solid #1e293b; display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; color:#94a3b8;">
+    <div style="display:flex; gap:20px; align-items:center;">
+      <span><strong>Cam 1:</strong> Logitech 720p (Index 2)</span>
+      <span><strong>Cam 2:</strong> Phone 1 (<span id="p1Port">Port 8081</span>)</span>
+      <span><strong>Cam 3:</strong> Phone 2 (<span id="p2Port">Port 8082</span>)</span>
+      <span id="adbSummary" style="color:#10b981;">ADB Ready</span>
+    </div>
+    <div style="display:flex; gap:16px; align-items:center;">
+      <div style="display:flex; align-items:center; gap:6px;">
+        <span style="color:#cbd5e1;">Sensitivity:</span>
+        <select id="sensitivitySelect" style="background:#1e293b; color:#38bdf8; border:1px solid #334155; border-radius:4px; padding:2px 8px; font-size:0.75rem; font-weight:600;" onchange="onSensitivityChange(this.value)">
+          <option value="balanced" selected>Normal / Balanced</option>
+          <option value="party">Casual / Party (Forgiving)</option>
+          <option value="strict">Strict / Hardcore (Poker Face)</option>
+        </select>
+      </div>
+      <a href="/results" style="color:#38bdf8; text-decoration:none; font-weight:600;">🏆 View Podium / Match Report</a>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <main class="dashboard-container">
+    
+    <!-- Left Column: 3-Cam Feeds + 6 Player Cards -->
+    <div class="main-content">
+      
+      <!-- 3 Camera Video Streams Grid with Manual Source Selection -->
+      <section class="camera-grid">
+        <!-- Camera 1: Monitors Players 1 & 2 -->
+        <div class="camera-card">
+          <div class="camera-header">
+            <div class="cam-swap-row">
+              <span style="font-weight:800; color:#38bdf8;">CAM 1 (PLAYERS 1 & 2)</span>
+              <span id="cam1LiveBadge" style="color:#34d399; font-weight:700;">● LIVE</span>
+            </div>
+            <select id="cam1Select" class="cam-select" onchange="onCameraSelected(1, this.value)">
+              <option value="loading">Loading cameras...</option>
+            </select>
+            <div class="cam-swap-row" style="margin-top:2px;">
+              <span>Source Mapping</span>
+              <button class="cam-swap-btn" onclick="swapCameras(1, 2)">⇄ Swap with Cam 2</button>
+            </div>
+          </div>
+          <div class="camera-stream-wrapper">
+            <img id="cam1Img" src="/api/stream/cam/1" class="camera-stream-img" alt="Cam 1 Stream">
+          </div>
+        </div>
+
+        <!-- Camera 2: Monitors Players 3 & 4 -->
+        <div class="camera-card">
+          <div class="camera-header">
+            <div class="cam-swap-row">
+              <span style="font-weight:800; color:#38bdf8;">CAM 2 (PLAYERS 3 & 4)</span>
+              <span id="cam2LiveBadge" style="color:#34d399; font-weight:700;">● LIVE</span>
+            </div>
+            <select id="cam2Select" class="cam-select" onchange="onCameraSelected(2, this.value)">
+              <option value="loading">Loading cameras...</option>
+            </select>
+            <div class="cam-swap-row" style="margin-top:2px;">
+              <span>Source Mapping</span>
+              <button class="cam-swap-btn" onclick="swapCameras(2, 3)">⇄ Swap with Cam 3</button>
+            </div>
+          </div>
+          <div class="camera-stream-wrapper">
+            <img id="cam2Img" src="/api/stream/cam/2" class="camera-stream-img" alt="Cam 2 Stream">
+          </div>
+        </div>
+
+        <!-- Camera 3: Monitors Players 5 & 6 -->
+        <div class="camera-card">
+          <div class="camera-header">
+            <div class="cam-swap-row">
+              <span style="font-weight:800; color:#38bdf8;">CAM 3 (PLAYERS 5 & 6)</span>
+              <span id="cam3LiveBadge" style="color:#34d399; font-weight:700;">● LIVE</span>
+            </div>
+            <select id="cam3Select" class="cam-select" onchange="onCameraSelected(3, this.value)">
+              <option value="loading">Loading cameras...</option>
+            </select>
+            <div class="cam-swap-row" style="margin-top:2px;">
+              <span>Source Mapping</span>
+              <button class="cam-swap-btn" onclick="swapCameras(3, 1)">⇄ Swap with Cam 1</button>
+            </div>
+          </div>
+          <div class="camera-stream-wrapper">
+            <img id="cam3Img" src="/api/stream/cam/3" class="camera-stream-img" alt="Cam 3 Stream">
+          </div>
+        </div>
+      </section>
+
+      <!-- 6-Player Live Telemetry Cards Grid -->
+      <section class="players-grid" id="playersGrid">
+        {% for pid in range(1, 7) %}
+        <div class="player-card" id="playerCard{{ pid }}">
+          <div class="player-header">
+            <div class="player-title-wrap">
+              <div class="rank-badge" id="pRank{{ pid }}">-</div>
+              <span class="player-name" id="pName{{ pid }}">{{ players.get(pid, 'Player ' ~ pid) }}</span>
+            </div>
+            <div class="penalty-pill" id="pPenalty{{ pid }}">0.0 pts</div>
+          </div>
+
+          <!-- Gaze State Pill -->
+          <div class="gaze-status-pill pill-facing-tv" id="pGazePill{{ pid }}">FACING_TV</div>
+
+          <!-- Attention Bar -->
+          <div>
+            <div class="metric-row">
+              <span>TV Attention</span>
+              <span class="metric-val" id="pAttention{{ pid }}">100%</span>
+            </div>
+            <div class="progress-bar-bg" style="margin-top:4px;">
+              <div class="progress-bar-fill" id="pAttentionBar{{ pid }}" style="width: 100%;"></div>
+            </div>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="metric-row">
+            <span>Look Streak: <strong id="pStreak{{ pid }}" style="color:#38bdf8;">0.0s</strong></span>
+            <span>Look Aways: <strong id="pLookAways{{ pid }}" style="color:#f59e0b;">0</strong></span>
+          </div>
+
+          <!-- Euler Angles HUD -->
+          <div class="angles-hud">
+            <div class="angle-box">YAW <span id="pYaw{{ pid }}">+0.0°</span></div>
+            <div class="angle-box">PITCH <span id="pPitch{{ pid }}">+0.0°</span></div>
+            <div class="angle-box">ROLL <span id="pRoll{{ pid }}">+0.0°</span></div>
+          </div>
+        </div>
+        {% endfor %}
+      </section>
+
+    </div>
+
+    <!-- Right Sidebar: Live Leaderboard + Reaction Alerts -->
+    <aside class="sidebar">
+      
+      <!-- Live Leaderboard Card -->
+      <div class="side-card">
+        <div class="side-card-title">
+          <span>🏆 LIVE LEADERBOARD</span>
+          <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">Lowest Penalty Wins</span>
+        </div>
+        <div class="leaderboard-list" id="leaderboardList">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+
+      <!-- Live Reaction Event Ticker -->
+      <div class="side-card" style="flex:1;">
+        <div class="side-card-title">
+          <span>⚡ REACTION EVENTS</span>
+          <span id="eventCountBadge" style="background:#ef4444; color:#fff; font-size:0.75rem; padding:2px 8px; border-radius:9999px;">0</span>
+        </div>
+        <div class="events-ticker" id="eventsTicker">
+          <div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:18px 0;">
+            No reaction events logged yet.
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- ADB Setup Modal -->
+  <div id="adbModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100; align-items:center; justify-content:center;">
+    <div style="background:#1e293b; border:1px solid #334155; border-radius:12px; width:520px; padding:24px; box-shadow:0 12px 32px rgba(0,0,0,0.5);">
+      <h3 style="margin-bottom:12px; font-size:1.1rem; display:flex; justify-content:space-between; align-items:center;">
+        <span>📱 ADB & Phone Camera Port Forwarding</span>
+        <button onclick="closeAdbModal()" style="background:transparent; border:none; color:#94a3b8; font-size:1.2rem; cursor:pointer;">✕</button>
+      </h3>
+      <p style="font-size:0.85rem; color:#cbd5e1; margin-bottom:16px;">
+        1. Connect both Android phones to the laptop via USB cable with USB Debugging enabled.<br>
+        2. Open <strong>IP Webcam</strong> app on both phones and click <em>Start Server</em>.<br>
+        3. Click <strong>Auto-Configure Port Forwarding</strong> below.
+      </p>
+
+      <div id="adbDetails" style="background:#0f172a; padding:12px; border-radius:8px; font-family:monospace; font-size:0.8rem; color:#38bdf8; margin-bottom:16px; max-height:160px; overflow-y:auto;">
+        Checking ADB status...
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn btn-secondary" onclick="closeAdbModal()">Close</button>
+        <button class="btn btn-primary" onclick="runAdbSetup()">Auto-Configure Port Forwarding</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

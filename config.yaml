@@ -1,0 +1,61 @@
+cameras:
+  cam1:
+    id: 1
+    name: Logitech 720p (USB Webcam)
+    source: '0'
+    players:
+    - 1
+    - 2
+    flip_horizontal: true
+  cam2:
+    id: 2
+    name: Phone 1 (USB Cable via ADB Port 8081)
+    source: mock
+    players:
+    - 3
+    - 4
+    flip_horizontal: false
+  cam3:
+    id: 3
+    name: Phone 2 (USB Cable via ADB Port 8082)
+    source: mock
+    players:
+    - 5
+    - 6
+    flip_horizontal: false
+mock_fallback_enabled: true
+players:
+  1: Player 1 (Left - Cam 1)
+  2: Player 2 (Right - Cam 1)
+  3: Player 3 (Left - Cam 2)
+  4: Player 4 (Right - Cam 2)
+  5: Player 5 (Left - Cam 3)
+  6: Player 6 (Right - Cam 3)
+gaze_thresholds:
+  yaw_sideways_deg: 24.0
+  pitch_down_deg: -18.0
+  pitch_up_deg: 22.0
+  facing_away_yaw_deg: 42.0
+  facing_away_pitch_deg: 32.0
+reaction_thresholds:
+  facial_velocity: 0.25
+  head_angular_velocity: 35.0
+  posture_delta: 0.28
+  disappear_duration_sec: 0.35
+penalty_weights:
+  away_time: 2.0
+  look_away_count: 5.0
+  reaction_intensity: 10.0
+  disappear_time: 15.0
+  lost_attention_pct: 1.5
+match:
+  total_videos: 40
+  countdown_seconds: 3
+  suspense_min_sec: 1.5
+  suspense_max_sec: 3.5
+  video_dir: data/videos
+adb:
+  tools_dir: tools/platform-tools
+  phone1_port: 8081
+  phone2_port: 8082
+  target_port: 8080

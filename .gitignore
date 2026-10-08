@@ -1,0 +1,50 @@
+# =================================================================
+# Git Ignore for 6-Player AI Reaction Challenge (funny-day)
+# =================================================================
+
+# Python Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Match logs & history (persisted locally)
+data/matches/*.json
+!data/matches/.gitkeep
+
+# Challenge video files (large media binaries)
+data/videos/*.mp4
+data/videos/*.webm
+data/videos/*.mkv
+data/videos/*.avi
+data/videos/*.mov
+!data/videos/.gitkeep
+
+# Pretrained binary models
+models/*.task
+!models/.gitkeep
+
+# Portable ADB Binaries (downloaded or installed locally)
+tools/platform-tools/
+tools/*.zip
+!tools/.gitkeep
+
+# IDE & Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Match Results & Podium | 6-Player Reaction Challenge</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    .results-container {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+    .podium-section {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 20px;
+      margin-bottom: 50px;
+      padding-top: 20px;
+    }
+    .podium-pillar {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px 16px 8px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+      width: 240px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      transition: transform 0.2s;
+    }
+    .podium-pillar:hover {
+      transform: translateY(-4px);
+    }
+    .pillar-1 {
+      height: 320px;
+      border-color: #eab308;
+      background: linear-gradient(180deg, #1e293b 0%, #172554 100%);
+      order: 2;
+    }
+    .pillar-2 {
+      height: 270px;
+      border-color: #94a3b8;
+      order: 1;
+    }
+    .pillar-3 {
+      height: 230px;
+      border-color: #d97706;
+      order: 3;
+    }
+    .trophy-icon {
+      font-size: 3.5rem;
+      margin-bottom: 10px;
+    }
+    .stats-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #131b2e;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 24px;
+    }
+    .stats-table th, .stats-table td {
+      padding: 14px 18px;
+      text-align: left;
+      border-bottom: 1px solid #1e293b;
+    }
+    .stats-table th {
+      background: #0f172a;
+      color: #94a3b8;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="top-nav">
+    <div class="brand">
+      <h1 class="brand-title">🏆 6-PLAYER REACTION CHALLENGE: RESULTS</h1>
+    </div>
+    <div class="controls-group">
+      <a href="/host" class="btn btn-primary" style="text-decoration:none;">◀ Back to Host Dashboard</a>
+      <a href="/api/export/latest" target="_blank" class="btn btn-secondary" style="text-decoration:none;">📥 Download JSON Report</a>
+    </div>
+  </header>
+
+  <div class="results-container">
+    <div style="text-align:center; margin-bottom:30px;">
+      <h2 style="font-size:2.2rem; font-weight:800;">FINAL STANDINGS & PODIUM</h2>
+      <p style="color:#94a3b8; font-size:1.0rem; margin-top:6px;">
+        Ranked from lowest penalty score (1st Place Winner) to highest penalty score (6th Place).
+      </p>
+    </div>
+
+    <!-- 3-Place Podium -->
+    <div class="podium-section" id="podiumSection">
+      <!-- 2nd Place -->
+      <div class="podium-pillar pillar-2" id="pillar2">
+        <div class="trophy-icon">🥈</div>
+        <h3 id="pNameRank2" style="font-size:1.1rem; margin-bottom:4px;">Player -</h3>
+        <p style="font-size:0.8rem; color:#94a3b8;">2nd Place</p>
+        <div id="pScoreRank2" style="font-size:1.4rem; font-weight:800; color:#cbd5e1; margin-top:auto;">-- pts</div>
+        <div id="pAttRank2" style="font-size:0.85rem; color:#10b981;">Attention: --%</div>
+      </div>
+
+      <!-- 1st Place Winner -->
+      <div class="podium-pillar pillar-1" id="pillar1">
+        <div class="trophy-icon">👑</div>
+        <h3 id="pNameRank1" style="font-size:1.3rem; margin-bottom:4px; color:#fef08a;">Player -</h3>
+        <p style="font-size:0.85rem; color:#eab308; font-weight:700;">CHAMPION (1st Place)</p>
+        <div id="pScoreRank1" style="font-size:1.7rem; font-weight:900; color:#facc15; margin-top:auto;">-- pts</div>
+        <div id="pAttRank1" style="font-size:0.9rem; color:#10b981; font-weight:700;">Attention: --%</div>
+      </div>
+
+      <!-- 3rd Place -->
+      <div class="podium-pillar pillar-3" id="pillar3">
+        <div class="trophy-icon">🥉</div>
+        <h3 id="pNameRank3" style="font-size:1.1rem; margin-bottom:4px;">Player -</h3>
+        <p style="font-size:0.8rem; color:#94a3b8;">3rd Place</p>
+        <div id="pScoreRank3" style="font-size:1.4rem; font-weight:800; color:#fb923c; margin-top:auto;">-- pts</div>
+        <div id="pAttRank3" style="font-size:0.85rem; color:#10b981;">Attention: --%</div>
+      </div>
+    </div>
+
+    <!-- Complete 6-Player Statistics Table -->
+    <div class="side-card">
+      <h3 style="font-size:1.1rem; margin-bottom:12px;">📊 Complete 6-Player Match Breakdown</h3>
+      <table class="stats-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Player Name</th>
+            <th>TV Attention %</th>
+            <th>Longest Streak</th>
+            <th>Look Aways</th>
+            <th>Total Away</th>
+            <th>Reaction Events</th>
+            <th>Penalty Score</th>
+          </tr>
+        </thead>
+        <tbody id="resultsTableBody">
+          <!-- Populated by results.js -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="/static/js/results.js"></script>
+</body>
+</html>

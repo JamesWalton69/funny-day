@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TV Screen | 6-Player Reaction Challenge</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="tv-body">
+
+  <div class="tv-viewport">
+    
+    <!-- Top HUD Banner -->
+    <div class="tv-overlay-header">
+      <div class="tv-round-badge">
+        <span id="tvRoundText" style="color:#f59e0b;">ROUND 01 / 40</span>
+      </div>
+      <div class="tv-round-badge" style="font-size:1.0rem; color:#38bdf8;">
+        <span>🎯 STAY FOCUSED ON TV</span>
+      </div>
+    </div>
+
+    <!-- Active Video Player -->
+    <video id="tvVideo" class="tv-video-element" playsinline preload="auto">
+      Your browser does not support HTML5 video.
+    </video>
+
+    <!-- Overlay 1: Pre-Match / Countdown Screen -->
+    <div id="tvCountdownOverlay" class="tv-suspense-overlay" style="display:flex;">
+      <h2 style="font-size:2.5rem; font-weight:800; margin-bottom:12px; letter-spacing:1px;">
+        6-PLAYER REACTION CHALLENGE
+      </h2>
+      <p style="font-size:1.3rem; color:#94a3b8; margin-bottom:32px;">
+        40 Random Clips • Tracked by 3 Webcams • Face the TV!
+      </p>
+      <div id="countdownNum" class="countdown-number">3</div>
+      <p id="countdownSub" style="margin-top:20px; font-size:1.1rem; color:#fbbf24;">
+        Get Ready...
+      </p>
+    </div>
+
+    <!-- Overlay 2: Inter-Video Suspense Screen -->
+    <div id="tvSuspenseOverlay" class="tv-suspense-overlay" style="display:none; background:rgba(0,0,0,0.95);">
+      <h3 style="font-size:2.2rem; font-weight:800; color:#a855f7; margin-bottom:16px;">
+        ⚡ NEXT CHALLENGE INCOMING...
+      </h3>
+      <p style="font-size:1.3rem; color:#e2e8f0; margin-bottom:24px;">
+        Do NOT look away. Do NOT flinch.
+      </p>
+      <div style="width:240px; height:8px; background:#1e1b4b; border-radius:4px; overflow:hidden;">
+        <div id="suspenseBar" style="width:100%; height:100%; background:linear-gradient(90deg, #a855f7, #ec4899); transition:width 2s linear;"></div>
+      </div>
+    </div>
+
+    <!-- Overlay 3: Calibration Banner -->
+    <div id="tvCalibrateOverlay" class="tv-suspense-overlay" style="display:none; background:rgba(15, 23, 42, 0.95);">
+      <h2 style="font-size:2.8rem; font-weight:900; color:#38bdf8; margin-bottom:16px;">
+        🎯 CALIBRATING NEUTRAL GAZE
+      </h2>
+      <p style="font-size:1.5rem; color:#f1f5f9; margin-bottom:20px;">
+        ALL 6 PLAYERS: LOOK DIRECTLY AT THE CENTER OF THIS TV SCREEN NOW!
+      </p>
+      <div id="calibTimer" class="countdown-number" style="font-size:5rem; color:#38bdf8;">3</div>
+    </div>
+
+    <!-- Overlay 4: Match Over Victory Screen -->
+    <div id="tvMatchOverOverlay" class="tv-suspense-overlay" style="display:none; background:rgba(10, 15, 30, 0.98);">
+      <h1 style="font-size:3.5rem; font-weight:900; color:#eab308; margin-bottom:16px;">
+        🏆 MATCH FINISHED!
+      </h1>
+      <p style="font-size:1.5rem; color:#94a3b8; margin-bottom:32px;">
+        All 40 challenge rounds completed. Check the referee dashboard for final penalties!
+      </p>
+      <a href="/results" class="btn btn-primary" style="font-size:1.2rem; padding:12px 32px; text-decoration:none;">
+        View Final Podium & Scores
+      </a>
+    </div>
+
+  </div>
+
+  <script src="/static/js/tv.js"></script>
+</body>
+</html>
